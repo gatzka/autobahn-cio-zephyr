@@ -1,11 +1,11 @@
 west:
   url: https://github.com/zephyrproject-rtos/west
-  revision: v0.5.7
+  revision: v0.5.8
 
 manifest:
   remotes:
     - name: cio-remote
-      url-base: file:///home/gatzka/workspace/git/cio/
+      url-base: file:///home/gatzka/workspace/git/cio
 
   projects:
     - name: cio
