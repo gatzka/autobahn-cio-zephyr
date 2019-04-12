@@ -5,7 +5,7 @@ west:
 manifest:
   remotes:
     - name: cio-remote
-      url-base: file:///home/gatzka/workspace/git/cio
+      url-base: file:///home/gatzka/workspace/git
 
   projects:
     - name: cio
