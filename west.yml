@@ -6,11 +6,18 @@ manifest:
   remotes:
     - name: cio-remote
       url-base: file:///home/gatzka/workspace/git
+    - name: zephyr-remote
+      url-base: https://github.com/zephyrproject-rtos
 
   projects:
     - name: cio
       remote: cio-remote
       revision: master
+
+    - name: zephyr
+      remote: zephyr-remote
+      revision: v1.13.0
+      west-commands: scripts/west-commands.yml
 
   self:
     path: bla
