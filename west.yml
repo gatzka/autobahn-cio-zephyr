@@ -12,3 +12,6 @@ manifest:
       remote: cio-remote
       revision: master
 
+  self:
+    path: bla
+
