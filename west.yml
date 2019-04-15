@@ -16,7 +16,7 @@ manifest:
 
     - name: zephyr
       remote: zephyr-remote
-      revision: v1.13.0
+      revision: master
       west-commands: scripts/west-commands.yml
 
   self:
