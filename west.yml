@@ -5,7 +5,7 @@ west:
 manifest:
   remotes:
     - name: cio-remote
-      url-base: https://github.com/gatzka
+      url-base: git@github.com/gatzka
     - name: zephyr-remote
       url-base: https://github.com/zephyrproject-rtos
 
