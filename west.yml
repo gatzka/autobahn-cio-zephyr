@@ -4,14 +4,14 @@ west:
 
 manifest:
   remotes:
-    - name: cio-remote
-      url-base: git://github.com/gatzka
+    - name: gatzka
+      url-base: git@github.com:gatzka
     - name: zephyr-remote
       url-base: https://github.com/zephyrproject-rtos
 
   projects:
     - name: cio
-      remote: cio-remote
+      remote: gatzka
       revision: feature/zephyr_support
 
     - name: zephyr
