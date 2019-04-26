@@ -7,3 +7,4 @@ include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(autobahn_cio)
 
 target_sources(app PRIVATE src/main.c)
+target_link_libraries (app PUBLIC cio:cio)
