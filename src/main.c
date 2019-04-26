@@ -7,7 +7,9 @@
 #include <zephyr.h>
 #include <misc/printk.h>
 
+#include <cio_version.h>
+
 void main(void)
 {
-	printk("Hello World! %s\n", CONFIG_BOARD);
+	printk("Using cio version: %s\n", cio_get_version_string());
 }
