@@ -4,8 +4,8 @@
 ```
 west init -m git@github.com:gatzka/autobahn-cio-zephyr.git autobahn-zephyr
 cd autobahn-zephyr
-west init
 west update
+west build -b native_posix autobahn-cio/
 ```
 
 
