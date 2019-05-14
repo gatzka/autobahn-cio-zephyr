@@ -51,7 +51,6 @@ int main(void)
 		return -1;
 	}
 
-
 	struct cio_server_socket ss;
 	err = cio_server_socket_init(&ss, &loop, 5, alloc_echo_client, free_echo_client, close_timeout_ns, NULL);
 	if (err != CIO_SUCCESS) {
@@ -62,9 +61,11 @@ int main(void)
 	err = cio_eventloop_run(&loop);
 	if (err != CIO_SUCCESS) {
 		printk("error in cio_eventloop_run!\n");
-		goto destroy_eventloop;
+		goto close_socket;
 	}
 
+close_socket:
+	cio_server_socket_close(&ss);
 destroy_eventloop:
 	cio_eventloop_destroy(&loop);
 
