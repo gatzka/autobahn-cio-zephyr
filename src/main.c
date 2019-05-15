@@ -54,7 +54,7 @@ int main(void)
 	struct cio_server_socket ss;
 	err = cio_server_socket_init(&ss, &loop, 5, alloc_echo_client, free_echo_client, close_timeout_ns, NULL);
 	if (err != CIO_SUCCESS) {
-		printk("error in cio_eventloop_run!\n");
+		printk("error in cio_server_socket_init! %d\n", err);
 		goto destroy_eventloop;
 	}
 
