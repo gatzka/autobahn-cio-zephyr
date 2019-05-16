@@ -58,6 +58,12 @@ int main(void)
 		goto destroy_eventloop;
 	}
 
+	err = cio_server_socket_set_reuse_address(&ss, true);
+	if (err != CIO_SUCCESS) {
+		printk("error in cio_server_socket_set_reuse_address! %d\n", err);
+		goto close_socket;
+	}
+
 	err = cio_eventloop_run(&loop);
 	if (err != CIO_SUCCESS) {
 		printk("error in cio_eventloop_run!\n");
