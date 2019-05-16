@@ -64,6 +64,14 @@ int main(void)
 		goto close_socket;
 	}
 
+	static const uint16_t SERVERSOCKET_LISTEN_PORT = 12345;
+	err = cio_server_socket_bind(&ss, NULL, SERVERSOCKET_LISTEN_PORT);
+	if (err != CIO_SUCCESS) {
+		printk("error in cio_server_socket_bind! %d\n", err);
+		goto close_socket;
+	}
+
+
 	err = cio_eventloop_run(&loop);
 	if (err != CIO_SUCCESS) {
 		printk("error in cio_eventloop_run!\n");
