@@ -19,6 +19,10 @@ manifest:
       revision: master
       west-commands: scripts/west-commands.yml
 
+    - name: net-tools
+      remote: zephyr-remote
+      revision: master
+
   self:
     path: autobahn-cio
 
