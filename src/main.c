@@ -44,6 +44,26 @@ static void free_echo_client(struct cio_socket *socket)
 	free(client);
 }
 
+static void handle_accept(struct cio_server_socket *ss, void *handler_context, enum cio_error err, struct cio_socket *socket)
+{
+	(void)handler_context;
+
+	struct echo_client *client = cio_container_of(socket, struct echo_client, socket);
+	(void)client;
+
+	if (err != CIO_SUCCESS) {
+		printk("accept error!\n");
+		cio_server_socket_close(ss);
+		cio_eventloop_cancel(ss->impl.loop);
+		return;
+	}
+
+	//cio_read_buffer_init(&client->rb, client->buffer, sizeof(client->buffer));
+	//struct cio_io_stream *stream = cio_socket_get_io_stream(socket);
+	//stream->read_some(stream, &client->rb, handle_read, client);
+}
+
+
 int main(void)
 {
 	enum cio_error err = cio_eventloop_init(&loop);
@@ -71,6 +91,11 @@ int main(void)
 		goto close_socket;
 	}
 
+	err = cio_server_socket_accept(&ss, handle_accept, NULL);
+	if (err != CIO_SUCCESS) {
+		printk("error in cio_server_socket_accept! %d\n", err);
+		goto close_socket;
+	}
 
 	err = cio_eventloop_run(&loop);
 	if (err != CIO_SUCCESS) {
