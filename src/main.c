@@ -97,6 +97,11 @@ int main(void)
 		goto close_socket;
 	}
 
+	k_sleep(5000);
+
+	printk("closing the server socket! %d\n", err);
+	cio_server_socket_close(&ss);
+
 	err = cio_eventloop_run(&loop);
 	if (err != CIO_SUCCESS) {
 		printk("error in cio_eventloop_run!\n");
