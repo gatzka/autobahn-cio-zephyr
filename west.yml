@@ -1,6 +1,6 @@
 west:
   url: https://github.com/zephyrproject-rtos/west
-  revision: v0.5.8
+  revision: v0.7.2
 
 manifest:
   remotes:
@@ -12,11 +12,11 @@ manifest:
   projects:
     - name: cio
       remote: gatzka
-      revision: feature/zephyr_support
+      revision: master
 
     - name: zephyr
       remote: zephyr-remote
-      revision: master
+      revision: v2.2.0
       west-commands: scripts/west-commands.yml
 
     - name: net-tools
