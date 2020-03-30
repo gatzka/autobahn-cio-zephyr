@@ -12,7 +12,7 @@ manifest:
   projects:
     - name: cio
       remote: gatzka
-      revision: master
+      revision: feature/zephyr
 
     - name: zephyr
       remote: zephyr-remote
