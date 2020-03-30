@@ -12,64 +12,76 @@
 
 #include "cio_error_code.h"
 #include "cio_eventloop.h"
-#include "cio_server_socket.h"
+#include "cio_http_location_handler.h"
+#include "cio_http_server.h"
 #include "cio_util.h"
+#include "cio_websocket_location_handler.h"
+#include "cio_write_buffer.h"
 
 static struct cio_eventloop loop;
 
-static const uint64_t close_timeout_ns = UINT64_C(1) * UINT64_C(1000) * UINT64_C(1000) * UINT64_C(1000);
-enum {BUFFER_SIZE = 100};
+enum {AUTOBAHN_SERVER_PORT = 9001};
 
-struct echo_client {
-	struct cio_socket socket;
-	uint8_t buffer[BUFFER_SIZE];
-	struct cio_write_buffer wb;
-	struct cio_write_buffer wbh;
-	struct cio_read_buffer rb;
-};
+enum {READ_BUFFER_SIZE = 10240};
+enum {IPV4_ADDRESS_SIZE = 4};
 
-static struct cio_socket *alloc_echo_client(void)
+static const uint64_t HEADER_READ_TIMEOUT = UINT64_C(5) * UINT64_C(1000) * UINT64_C(1000) * UINT64_C(1000);
+static const uint64_t BODY_READ_TIMEOUT = UINT64_C(5) * UINT64_C(1000) * UINT64_C(1000) * UINT64_C(1000);
+static const uint64_t RESPONSE_TIMEOUT = UINT64_C(1) * UINT64_C(1000) * UINT64_C(1000) * UINT64_C(1000);
+static const uint64_t CLOSE_TIMEOUT_NS = UINT64_C(1) * UINT64_C(1000) * UINT64_C(1000) * UINT64_C(1000);
+
+static struct cio_socket *alloc_http_client(void)
 {
-	struct echo_client *client = malloc(sizeof(*client));
+	struct cio_http_client *client = malloc(sizeof(*client) + READ_BUFFER_SIZE);
 	if (cio_unlikely(client == NULL)) {
 		return NULL;
 	}
 
+	client->buffer_size = READ_BUFFER_SIZE;
 	return &client->socket;
 }
 
-static void free_echo_client(struct cio_socket *socket)
+static void free_http_client(struct cio_socket *socket)
 {
-	struct echo_client *client = cio_container_of(socket, struct echo_client, socket);
+	struct cio_http_client *client = cio_container_of(socket, struct cio_http_client, socket);
 	free(client);
 }
 
-static void handle_accept(struct cio_server_socket *ss, void *handler_context, enum cio_error err, struct cio_socket *socket)
+static void http_server_closed(struct cio_http_server *s)
 {
-	(void)handler_context;
-
-	struct echo_client *client = cio_container_of(socket, struct echo_client, socket);
-	(void)client;
-
-	if (err != CIO_SUCCESS) {
-		printk("accept error!\n");
-		cio_server_socket_close(ss);
-		cio_eventloop_cancel(ss->impl.loop);
-		return;
-	}
-
-	//cio_read_buffer_init(&client->rb, client->buffer, sizeof(client->buffer));
-	//struct cio_io_stream *stream = cio_socket_get_io_stream(socket);
-	//stream->read_some(stream, &client->rb, handle_read, client);
+	(void)s;
+	cio_eventloop_cancel(&loop);
 }
 
+static void serve_error(struct cio_http_server *server, const char *reason)
+{
+	(void)reason;
+	cio_http_server_shutdown(server, http_server_closed);
+}
 
 void main(void)
 {
 	enum cio_error err = cio_eventloop_init(&loop);
 	if (err != CIO_SUCCESS) {
-		return -1;
+		printk("error in cio_eventloop_init! %d\n", err);
+		return;
 	}
+
+	struct cio_http_server_configuration config = {
+		.on_error = serve_error,
+		.read_header_timeout_ns = HEADER_READ_TIMEOUT,
+		.read_body_timeout_ns = BODY_READ_TIMEOUT,
+		.response_timeout_ns = RESPONSE_TIMEOUT,
+		.close_timeout_ns = CLOSE_TIMEOUT_NS,
+		.alloc_client = alloc_http_client,
+		.free_client = free_http_client
+	};
+
+	uint8_t ip[IPV4_ADDRESS_SIZE] = {0, 0, 0, 0};
+	struct cio_inet_address address;
+	cio_init_inet_address(&address, ip, sizeof(ip));
+	cio_init_inet_socket_address(&config.endpoint, &address, AUTOBAHN_SERVER_PORT);
+
 #if 0
 	struct cio_server_socket ss;
 	err = cio_server_socket_init(&ss, &loop, 5, alloc_echo_client, free_echo_client, close_timeout_ns, NULL);
