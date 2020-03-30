@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 #include <zephyr.h>
-#include <misc/printk.h>
+#include <sys/printk.h>
 
 #include "cio_error_code.h"
 #include "cio_eventloop.h"
@@ -64,13 +64,13 @@ static void handle_accept(struct cio_server_socket *ss, void *handler_context, e
 }
 
 
-int main(void)
+void main(void)
 {
 	enum cio_error err = cio_eventloop_init(&loop);
 	if (err != CIO_SUCCESS) {
 		return -1;
 	}
-
+#if 0
 	struct cio_server_socket ss;
 	err = cio_server_socket_init(&ss, &loop, 5, alloc_echo_client, free_echo_client, close_timeout_ns, NULL);
 	if (err != CIO_SUCCESS) {
@@ -112,6 +112,5 @@ close_socket:
 	cio_server_socket_close(&ss);
 destroy_eventloop:
 	cio_eventloop_destroy(&loop);
-
-	return 0;
+#endif
 }
