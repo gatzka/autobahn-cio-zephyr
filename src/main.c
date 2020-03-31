@@ -77,17 +77,20 @@ void main(void)
 		.free_client = free_http_client
 	};
 
-	uint8_t ip[IPV4_ADDRESS_SIZE] = {0, 0, 0, 0};
-	struct cio_inet_address address;
-	cio_init_inet_address(&address, ip, sizeof(ip));
-	cio_init_inet_socket_address(&config.endpoint, &address, AUTOBAHN_SERVER_PORT);
+	err = cio_init_inet_socket_address(&config.endpoint, cio_get_inet_address_any4(), AUTOBAHN_SERVER_PORT);
+	if (err != CIO_SUCCESS) {
+		printk("error in cio_init_inet_socket_address! %d\n", err);
+		goto destroy_loop;
+	}
+
+	printk("started\n");
 
 #if 0
 	struct cio_server_socket ss;
 	err = cio_server_socket_init(&ss, &loop, 5, alloc_echo_client, free_echo_client, close_timeout_ns, NULL);
 	if (err != CIO_SUCCESS) {
 		printk("error in cio_server_socket_init! %d\n", err);
-		goto destroy_eventloop;
+		goto destroy_loop;
 	}
 
 	err = cio_server_socket_set_reuse_address(&ss, true);
@@ -122,7 +125,7 @@ void main(void)
 
 close_socket:
 	cio_server_socket_close(&ss);
-destroy_eventloop:
-	cio_eventloop_destroy(&loop);
 #endif
+destroy_loop:
+	cio_eventloop_destroy(&loop);
 }
