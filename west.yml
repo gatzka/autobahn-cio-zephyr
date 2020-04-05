@@ -24,5 +24,5 @@ manifest:
       revision: master
 
   self:
-    path: autobahn-cio
+    path: autobahn-cio-zephyr
 
